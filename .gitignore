@@ -8,5 +8,9 @@ node_modules/
 my-test-app/
 test-*/
 
+# Generated inside template dirs when running locally for dev/testing
+templates/**/.next/
+templates/**/package-lock.json
+
 # macOS
 .DS_Store

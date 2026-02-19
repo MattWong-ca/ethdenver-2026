@@ -7,8 +7,8 @@ import { execSync } from "child_process";
 
 const TEMPLATES = {
   storage: "File registry (storage SDK + on-chain provenance)",
-  compute: "Decentralized chat (inference SDK + on-chain logging)",
-  agent: "Autonomous agent (storage + compute + task contract)",
+  compute: "Decentralized chat (inference SDK + on-chain logging) — coming soon",
+  agent:   "Autonomous agent (storage + compute + task contract) — coming soon",
 } as const;
 
 type Template = keyof typeof TEMPLATES;
@@ -66,8 +66,8 @@ async function main() {
   s.start("Scaffolding project");
   const templateDir = path.join(__dirname, "..", "templates", template as Template);
   if (!fs.existsSync(templateDir)) {
-    s.stop(pc.red(`Template "${template}" not found`));
-    process.exit(1);
+    s.stop(pc.yellow(`The "${template}" template is coming soon! Only "storage" is available right now.`));
+    process.exit(0);
   }
   fs.copySync(templateDir, targetDir, {
     filter: (src) => !src.includes("node_modules") && !src.includes(".next"),
