@@ -49,16 +49,6 @@ async function main() {
   });
   if (p.isCancel(template)) { p.cancel("Cancelled."); process.exit(0); }
 
-  const pkgManager = await p.select({
-    message: "Package manager:",
-    options: [
-      { value: "npm", label: "npm" },
-      { value: "pnpm", label: "pnpm" },
-      { value: "yarn", label: "yarn" },
-    ],
-  });
-  if (p.isCancel(pkgManager)) { p.cancel("Cancelled."); process.exit(0); }
-
   const targetDir = path.resolve(process.cwd(), projectName as string);
 
   if (fs.existsSync(targetDir)) {
@@ -95,17 +85,16 @@ async function main() {
     fs.copySync(envExample, envDest);
   }
 
-  s.stop(`Scaffolding project in ${pc.green(`./${projectName as string}`)}`);
+  s.stop(`Scaffolded project in ${pc.green(`./${projectName as string}`)}`);
 
-  // Install dependencies
-  s.start(`Installing dependencies with ${pkgManager as string}`);
+  // Install dependencies — stream output directly so user can see progress
+  console.log(pc.dim("\n  Installing dependencies... (this may take a minute, hang tight)\n"));
   try {
-    const installCmd =
-      pkgManager === "yarn" ? "yarn" : pkgManager === "pnpm" ? "pnpm install" : "npm install";
-    execSync(installCmd, { cwd: targetDir, stdio: "pipe" });
-    s.stop("Dependencies installed");
+    execSync("npm install", { cwd: targetDir, stdio: "inherit" });
+    console.log();
+    p.log.success("Dependencies installed");
   } catch {
-    s.stop(pc.yellow("Dependency install failed — run it manually"));
+    p.log.warn("Dependency install failed — run `npm install` manually inside the project");
   }
 
   p.outro(
@@ -116,9 +105,9 @@ async function main() {
       "",
       `    ${pc.cyan(`cd ${projectName as string}`)}`,
       `    ${pc.dim("# Add your private key to packages/web/.env.local")}`,
-      `    ${pc.cyan(`${pkgManager as string} run dev`)}     ${pc.dim("→ local dev server")}`,
-      `    ${pc.cyan(`${pkgManager as string} run deploy`)}  ${pc.dim("→ compile + deploy contract to Galileo testnet")}`,
-      `    ${pc.cyan(`${pkgManager as string} run verify`)}  ${pc.dim("→ verify contract on 0G explorer")}`,
+      `    ${pc.cyan("npm run dev")}     ${pc.dim("→ local dev server")}`,
+      `    ${pc.cyan("npm run deploy")}  ${pc.dim("→ compile + deploy contract to Galileo testnet")}`,
+      `    ${pc.cyan("npm run verify")}  ${pc.dim("→ verify contract on 0G explorer")}`,
       "",
       `  ${pc.dim("Docs: https://docs.0g.ai")}`,
     ].join("\n")
