@@ -1,0 +1,12 @@
+# CLI build output (generated from src/ via `npm run build`)
+dist/
+
+# Dependencies
+node_modules/
+
+# Local test scaffolds — anything created by running the CLI locally
+my-test-app/
+test-*/
+
+# macOS
+.DS_Store
