@@ -1,147 +1,74 @@
 .main {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px 20px 80px;
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
+  max-width: 480px;
+  width: 100%;
 }
 
-/* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
-.logo { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
-.logoAccent { color: var(--accent); }
-.wallet { display: flex; align-items: center; gap: 12px; }
-.address { font-size: 0.85rem; color: var(--muted); font-family: monospace; }
 
-/* Buttons */
-.btnPrimary {
-  background: var(--accent);
-  color: #000;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: opacity 0.15s;
+.accent { color: var(--accent); }
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: -16px;
 }
-.btnPrimary:hover { opacity: 0.85; }
 
-.btnSecondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-.btnSecondary:hover { border-color: var(--accent); color: var(--accent); }
-
-/* Hero */
-.hero { text-align: center; }
-.hero h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; }
-.hero p { color: var(--muted); margin-top: 8px; }
-
-/* Dropzone */
-.dropzone {
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  padding: 48px 24px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+.steps {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
-.dropzone:hover, .dropzoneOver {
-  border-color: var(--accent);
-  background: var(--accent-dim);
-}
-.dropzoneIcon { font-size: 2rem; color: var(--accent); }
-.dropzoneHint { font-size: 0.8rem; color: var(--muted); }
-.link { color: var(--accent); }
 
-/* Status bar */
-.statusBar {
+.steps li {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-.uploading-storage, .registering { border-color: var(--accent); color: var(--accent); }
-.done { border-color: var(--success); color: var(--success); }
-.error { border-color: var(--error); color: var(--error); }
-.explorerLink { margin-left: auto; font-size: 0.8rem; color: var(--accent); }
-
-/* Spinner */
-.spinner {
-  width: 14px; height: 14px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Warning */
-.warning {
-  background: rgba(255, 200, 0, 0.08);
-  border: 1px solid rgba(255, 200, 0, 0.3);
-  color: #ffc800;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-}
-.warning code { font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
-
-/* Gallery */
-.gallery { display: flex; flex-direction: column; gap: 16px; }
-.gallery h2 { font-size: 1.1rem; font-weight: 600; }
-.empty { color: var(--muted); font-size: 0.9rem; }
-
-.fileList { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.fileItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 16px;
-  transition: border-color 0.15s;
-}
-.fileItem:hover { border-color: var(--accent); }
-.fileInfo { display: flex; flex-direction: column; gap: 4px; }
-.fileName { font-weight: 500; font-size: 0.95rem; }
-.fileContentId { font-family: monospace; font-size: 0.78rem; color: var(--muted); }
-.fileDate { font-size: 0.78rem; color: var(--muted); }
-
-/* Connect prompt */
-.connectPrompt {
-  text-align: center;
-  color: var(--muted);
-  padding: 60px 0;
 }
 
-/* Footer */
-.footer {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
 }
+
+.path {
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.links a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.links a:hover { color: var(--accent); }
