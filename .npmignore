@@ -1,0 +1,15 @@
+# Dev tools
+src/
+tsconfig.json
+
+# Local test scaffolds
+my-test-app/
+test-*/
+
+# Generated inside template dirs when running locally for dev/testing
+templates/**/node_modules/
+templates/**/.next/
+templates/**/package-lock.json
+
+# macOS
+.DS_Store
