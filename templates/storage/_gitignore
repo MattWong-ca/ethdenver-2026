@@ -1,0 +1,20 @@
+# deps
+node_modules/
+
+# Next.js
+packages/web/.next/
+packages/web/out/
+
+# Hardhat
+packages/contracts/artifacts/
+packages/contracts/cache/
+packages/contracts/typechain-types/
+packages/contracts/.deployed-address
+
+# env — never commit private keys
+packages/web/.env.local
+packages/web/.env
+
+# misc
+.DS_Store
+*.log
