@@ -59,6 +59,8 @@ async function main() {
 
   const s = p.spinner();
 
+  fs.ensureDirSync(targetDir);
+
   s.start("Scaffolding project");
   scaffold({ projectName: projectName as string, contracts: !!contracts, storage: !!storage, compute: !!compute }, targetDir);
   s.stop(`Scaffolded project in ${pc.green(`./${projectName as string}`)}`);
