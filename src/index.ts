@@ -4,14 +4,7 @@ import pc from "picocolors";
 import path from "path";
 import fs from "fs-extra";
 import { execSync } from "child_process";
-
-const TEMPLATES = {
-  storage: "File registry (storage SDK + on-chain provenance)",
-  compute: "Decentralized chat (inference SDK + on-chain logging) — coming soon",
-  agent:   "Autonomous agent (storage + compute + task contract) — coming soon",
-} as const;
-
-type Template = keyof typeof TEMPLATES;
+import { scaffold } from "./scaffold";
 
 async function main() {
   console.log();
@@ -19,7 +12,7 @@ async function main() {
     pc.cyan(
       [
         "  ╔═══════════════════════════════════╗",
-        "  ║     " + pc.bold("create-0g-app") + "  v1.0.0       ║",
+        "  ║     " + pc.bold("create-0g-app") + "  v1.1.0         ║",
         "  ╚═══════════════════════════════════╝",
       ].join("\n")
     )
@@ -28,7 +21,7 @@ async function main() {
 
   p.intro(pc.bgCyan(pc.black(" 0G App Scaffolder ")));
 
-  // Project name from CLI arg or prompt
+  // Project name
   let projectName = process.argv[2];
   if (!projectName) {
     const name = await p.text({
@@ -43,11 +36,15 @@ async function main() {
     projectName = name as string;
   }
 
-  const template = await p.select({
-    message: "Which template would you like to use?",
-    options: Object.entries(TEMPLATES).map(([value, label]) => ({ value, label: `${value.padEnd(10)} — ${label}` })),
-  });
-  if (p.isCancel(template)) { p.cancel("Cancelled."); process.exit(0); }
+  // Feature selection
+  const contracts = await p.confirm({ message: "Include on-chain contracts? (Hardhat + 0G Galileo)", initialValue: false });
+  if (p.isCancel(contracts)) { p.cancel("Cancelled."); process.exit(0); }
+
+  const storage = await p.confirm({ message: "Use 0G Storage?", initialValue: false });
+  if (p.isCancel(storage)) { p.cancel("Cancelled."); process.exit(0); }
+
+  const compute = await p.confirm({ message: "Use 0G Compute? (AI inference)", initialValue: false });
+  if (p.isCancel(compute)) { p.cancel("Cancelled."); process.exit(0); }
 
   const targetDir = path.resolve(process.cwd(), projectName as string);
 
@@ -62,55 +59,44 @@ async function main() {
 
   const s = p.spinner();
 
-  // Copy template
   s.start("Scaffolding project");
-  const templateDir = path.join(__dirname, "..", "templates", template as Template);
-  if (!fs.existsSync(templateDir)) {
-    s.stop(pc.yellow(`The "${template}" template is coming soon! Only "storage" is available right now.`));
-    process.exit(0);
-  }
-  fs.copySync(templateDir, targetDir, {
-    filter: (src) => !src.includes("node_modules") && !src.includes(".next"),
-  });
-
-  // Rename gitignore (npm strips .gitignore on publish)
-  const gitignoreSrc = path.join(targetDir, "_gitignore");
-  const gitignoreDest = path.join(targetDir, ".gitignore");
-  if (fs.existsSync(gitignoreSrc)) fs.moveSync(gitignoreSrc, gitignoreDest);
-
-  // Write .env from .env.example in web package
-  const envExample = path.join(targetDir, "packages", "web", ".env.example");
-  const envDest = path.join(targetDir, "packages", "web", ".env.local");
-  if (fs.existsSync(envExample) && !fs.existsSync(envDest)) {
-    fs.copySync(envExample, envDest);
-  }
-
+  scaffold({ projectName: projectName as string, contracts: !!contracts, storage: !!storage, compute: !!compute }, targetDir);
   s.stop(`Scaffolded project in ${pc.green(`./${projectName as string}`)}`);
 
-  // Install dependencies — stream output directly so user can see progress
+  // Install
   console.log(pc.dim("\n  Installing dependencies... (this may take a minute, hang tight)\n"));
   try {
     execSync("npm install", { cwd: targetDir, stdio: "inherit" });
     console.log();
     p.log.success("Dependencies installed");
   } catch {
-    p.log.warn("Dependency install failed — run `npm install` manually inside the project");
+    p.log.warn("Dependency install failed — run `npm install` manually");
   }
+
+  const selectedFeatures = [
+    contracts && "contracts",
+    storage && "storage",
+    compute && "compute",
+  ].filter(Boolean);
 
   p.outro(
     [
       pc.green("Your 0G app is ready!"),
+      selectedFeatures.length > 0
+        ? `  ${pc.dim("Features:")} ${selectedFeatures.map((f) => pc.cyan(f as string)).join(", ")}`
+        : "",
       "",
       "  " + pc.dim("Next steps:"),
       "",
       `    ${pc.cyan(`cd ${projectName as string}`)}`,
-      `    ${pc.dim("# Add your private key to packages/web/.env.local")}`,
-      `    ${pc.cyan("npm run dev")}     ${pc.dim("→ local dev server")}`,
-      `    ${pc.cyan("npm run deploy")}  ${pc.dim("→ compile + deploy contract to Galileo testnet")}`,
-      `    ${pc.cyan("npm run verify")}  ${pc.dim("→ verify contract on 0G explorer")}`,
+      contracts ? `    ${pc.dim("# Add PRIVATE_KEY to packages/web/.env.local")}` : "",
+      contracts ? `    ${pc.cyan("npm run deploy")}  ${pc.dim("→ deploy contract to Galileo testnet")}` : "",
+      `    ${pc.cyan("npm run dev")}     ${pc.dim("→ start local dev server")}`,
       "",
       `  ${pc.dim("Docs: https://docs.0g.ai")}`,
-    ].join("\n")
+    ]
+      .filter((l) => l !== "")
+      .join("\n")
   );
 }
 

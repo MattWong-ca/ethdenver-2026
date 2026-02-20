@@ -11,12 +11,6 @@
   z-index: 10;
 }
 
-.left {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
 .logo {
   font-size: 1rem;
   font-weight: 700;
@@ -24,35 +18,9 @@
   color: var(--text);
   text-decoration: none;
 }
+.logo:hover { text-decoration: none; }
 
-.accent {
-  color: var(--accent);
-}
-
-.tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.tab {
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.15s, background 0.15s;
-}
-
-.tab:hover {
-  color: var(--text);
-  background: var(--surface);
-}
-
-.active {
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
+.accent { color: var(--accent); }
 
 .right {
   display: flex;

@@ -1,30 +1,18 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import styles from "./Navbar.module.css";
 
 export function Navbar() {
-  const pathname = usePathname();
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
 
   return (
     <nav className={styles.nav}>
-      <div className={styles.left}>
-        <Link href="/" className={styles.logo}>
-          <span className={styles.accent}>create</span>-0g-app
-        </Link>
-        <div className={styles.tabs}>
-          <Link
-            href="/storage"
-            className={`${styles.tab} ${pathname === "/storage" ? styles.active : ""}`}
-          >
-            Storage
-          </Link>
-        </div>
-      </div>
+      <Link href="/" className={styles.logo}>
+        <span className={styles.accent}>create</span>-0g-app
+      </Link>
       <div className={styles.right}>
         {isConnected ? (
           <>
