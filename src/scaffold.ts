@@ -49,7 +49,7 @@ function noDeps(src: string) {
   return !src.includes("node_modules") && !src.includes(".next");
 }
 
-function writeRootPackageJson(targetDir: string, { projectName, contracts }: Features) {
+function writeRootPackageJson(targetDir: string, { projectName, contracts, storage }: Features) {
   const workspaces = ["packages/web"];
   if (contracts) workspaces.push("packages/contracts");
 
@@ -57,6 +57,9 @@ function writeRootPackageJson(targetDir: string, { projectName, contracts }: Fea
     dev: "npm run dev --workspace=packages/web",
     build: "npm run build --workspace=packages/web",
   };
+  if (storage) {
+    scripts.postinstall = "node scripts/patch-0g-sdk.js";
+  }
   if (contracts) {
     scripts.deploy = "npm run compile --workspace=packages/contracts && npm run deploy --workspace=packages/contracts";
     scripts.verify = "npm run verify --workspace=packages/contracts";
@@ -77,9 +80,8 @@ function writeWebPackageJson(targetDir: string, { storage, compute }: Features) 
     viem: "^2.21.0",
     wagmi: "^2.13.0",
   };
-  // TODO: uncomment when wiring up real SDK integrations
-  // if (storage) { deps["@0glabs/0g-ts-sdk"] = "^0.3.1"; deps["ethers"] = "^6.13.0"; }
-  // if (compute) { deps["@0glabs/0g-serving-user-broker"] = "latest"; deps["ethers"] = "^6.13.0"; }
+  if (storage) { deps["@0glabs/0g-ts-sdk"] = "^0.3.3"; deps["ethers"] = "^6.13.0"; }
+  if (compute) { deps["@0glabs/0g-serving-user-broker"] = "latest"; deps["ethers"] = "^6.13.0"; }
 
   const pkg = {
     name: "web",
@@ -105,23 +107,28 @@ function writeEnvExample(targetDir: string, { contracts, storage, compute }: Fea
   const lines = [
     "# 0G Galileo Testnet",
     "NEXT_PUBLIC_CHAIN_ID=16601",
-    "NEXT_PUBLIC_RPC_URL=https://evmrpc-test.0g.ai",
+    "NEXT_PUBLIC_RPC_URL=https://evmrpc-testnet.0g.ai",
   ];
   if (storage) {
-    lines.push("NEXT_PUBLIC_STORAGE_INDEXER=https://indexer-storage-testnet-standard.0g.ai");
-    lines.push("NEXT_PUBLIC_STORAGE_RPC=https://rpc-storage-testnet.0g.ai");
+    lines.push("STORAGE_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai");
   }
   if (compute) {
     lines.push("");
     lines.push("# 0G Compute — set your provider address (find one via broker.listService())");
     lines.push("NEXT_PUBLIC_COMPUTE_PROVIDER=");
   }
+  if (storage && !contracts) {
+    lines.push("");
+    lines.push("# Private key for signing storage transactions — never commit this");
+    lines.push("# Get testnet OG at https://faucet.0g.ai");
+    lines.push("PRIVATE_KEY=");
+  }
   if (contracts) {
     lines.push("");
     lines.push("# Populated automatically after `npm run deploy`");
     lines.push("NEXT_PUBLIC_CONTRACT_ADDRESS=");
     lines.push("");
-    lines.push("# Private key for Hardhat deploy — never commit this");
+    lines.push("# Private key for Hardhat deploy and storage transactions — never commit this");
     lines.push("# Get testnet OG at https://faucet.0g.ai");
     lines.push("PRIVATE_KEY=");
   }

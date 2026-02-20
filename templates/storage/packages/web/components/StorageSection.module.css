@@ -64,6 +64,8 @@
 }
 .fileName { font-size: 0.9rem; font-weight: 500; }
 .contentId { font-family: monospace; font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.txLink { font-size: 0.75rem; color: var(--accent); text-decoration: none; margin-top: 3px; display: inline-block; }
+.txLink:hover { text-decoration: underline; }
 
 .btn {
   background: transparent;
