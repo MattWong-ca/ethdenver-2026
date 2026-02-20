@@ -1,6 +1,6 @@
 {
   "name": "create-0g-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zero-config scaffold CLI for building on the 0G decentralized AI network",
   "bin": {
     "create-0g-app": "./dist/index.js"
@@ -15,7 +15,14 @@
     "start": "node dist/index.js",
     "prepare": "npm run build"
   },
-  "keywords": ["0g", "scaffold", "cli", "web3", "ai", "decentralized"],
+  "keywords": [
+    "0g",
+    "scaffold",
+    "cli",
+    "web3",
+    "ai",
+    "decentralized"
+  ],
   "license": "MIT",
   "dependencies": {
     "@clack/prompts": "^0.9.1",
