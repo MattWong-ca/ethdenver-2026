@@ -79,11 +79,6 @@ export function ComputeSection() {
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <div className={styles.warning}>
-        ⚠ Add your <code>PRIVATE_KEY</code> to <code>packages/web/.env.local</code> before sending messages.{" "}
-        <a href="https://faucet.0g.ai" target="_blank" rel="noopener noreferrer">Get testnet OG ↗</a>
-      </div>
-
       <div className={styles.inputRow}>
         <input
           className={styles.input}

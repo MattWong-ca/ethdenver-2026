@@ -21,13 +21,18 @@ async function getBroker() {
   const signer = getSigner();
   const broker = await createZGComputeNetworkBroker(signer);
 
+  const MIN_BALANCE = BigInt("3000000000000000000"); // 3 OG minimum (v0.6.x requirement)
   try {
-    await broker.ledger.getLedger();
+    const ledger = await broker.ledger.getLedger();
+    if (ledger.availableBalance < MIN_BALANCE) {
+      console.log("[compute] balance low, topping up...");
+      await broker.ledger.depositFund(3);
+    }
   } catch (e) {
     const msg = (e as Error).message ?? "";
     if (msg.includes("does not exist") || msg.includes("add-account")) {
-      console.log("Creating ledger account with 0.1 OG deposit...");
-      await broker.ledger.addLedger(0.1);
+      console.log("[compute] creating ledger with 3 OG deposit...");
+      await broker.ledger.addLedger(3);
     } else {
       throw e;
     }
@@ -63,6 +68,9 @@ export async function POST(req: NextRequest) {
 
     // Acknowledge provider (safe to call multiple times)
     await broker.inference.acknowledgeProviderSigner(providerAddress);
+
+    // Transfer funds to provider (required before inference, minimum 1 OG)
+    await broker.ledger.transferFund(providerAddress, "inference", BigInt("1000000000000000000"));
 
     // Get endpoint + model name from provider metadata
     const { endpoint, model: modelName } = await broker.inference.getServiceMetadata(providerAddress);
