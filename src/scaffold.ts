@@ -13,6 +13,9 @@ const TEMPLATES_DIR = path.join(__dirname, "..", "templates");
 export function scaffold(features: Features, targetDir: string) {
   const { contracts, storage, compute } = features;
 
+  // 0. Ensure target directory exists
+  fs.ensureDirSync(targetDir);
+
   // 1. Always copy base
   fs.copySync(path.join(TEMPLATES_DIR, "base"), targetDir, { filter: noDeps });
 
