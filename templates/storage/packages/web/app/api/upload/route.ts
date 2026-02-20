@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
   }
+  if (file.size === 0) {
+    return NextResponse.json({ error: "File is empty" }, { status: 400 });
+  }
 
   const tmpPath = join(tmpdir(), `0g-upload-${randomBytes(8).toString("hex")}`);
   try {

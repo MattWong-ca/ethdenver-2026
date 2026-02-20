@@ -43,6 +43,17 @@
 
 .error { color: var(--error); font-size: 0.85rem; }
 
+.warning {
+  font-size: 0.85rem;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.warning code { font-family: monospace; font-weight: 600; }
+.warning a { color: #92400e; font-weight: 600; }
+
 .inputRow { display: flex; gap: 8px; }
 .input {
   flex: 1;

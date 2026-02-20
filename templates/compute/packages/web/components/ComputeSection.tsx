@@ -79,11 +79,10 @@ export function ComputeSection() {
 
       {error && <p className={styles.error}>{error}</p>}
 
-      {!process.env.NEXT_PUBLIC_PRIVATE_KEY_SET && (
-        <p className={styles.hint}>
-          ⚠ Set <code>PRIVATE_KEY</code> in <code>packages/web/.env.local</code> to enable inference.
-        </p>
-      )}
+      <div className={styles.warning}>
+        ⚠ Add your <code>PRIVATE_KEY</code> to <code>packages/web/.env.local</code> before sending messages.{" "}
+        <a href="https://faucet.0g.ai" target="_blank" rel="noopener noreferrer">Get testnet OG ↗</a>
+      </div>
 
       <div className={styles.inputRow}>
         <input

@@ -79,6 +79,8 @@ async function main() {
     compute && "compute",
   ].filter(Boolean);
 
+  const needsPrivateKey = !!(contracts || storage || compute);
+
   p.outro(
     [
       pc.green("Your 0G app is ready!"),
@@ -89,7 +91,9 @@ async function main() {
       "  " + pc.dim("Next steps:"),
       "",
       `    ${pc.cyan(`cd ${projectName as string}`)}`,
-      contracts ? `    ${pc.dim("# Add PRIVATE_KEY to packages/web/.env.local")}` : "",
+      needsPrivateKey ? `    ${pc.yellow("⚠")}  Add your ${pc.bold("PRIVATE_KEY")} to ${pc.cyan(`${projectName as string}/packages/web/.env.local`)}` : "",
+      needsPrivateKey ? `       ${pc.dim("Get testnet OG at https://faucet.0g.ai")}` : "",
+      "",
       contracts ? `    ${pc.cyan("npm run deploy")}  ${pc.dim("→ deploy contract to Galileo testnet")}` : "",
       `    ${pc.cyan("npm run dev")}     ${pc.dim("→ start local dev server")}`,
       "",
