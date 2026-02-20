@@ -49,7 +49,8 @@ export function scaffold(features: Features, targetDir: string) {
 }
 
 function noDeps(src: string) {
-  return !src.includes("node_modules") && !src.includes(".next");
+  const rel = path.relative(TEMPLATES_DIR, src);
+  return !rel.includes("node_modules") && !rel.includes(".next");
 }
 
 function writeRootPackageJson(targetDir: string, { projectName, contracts, storage }: Features) {
