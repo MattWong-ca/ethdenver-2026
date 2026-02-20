@@ -1,10 +1,10 @@
 import { createZGServingNetworkBroker } from "@0glabs/0g-serving-user-broker";
 import { ethers } from "ethers";
 
-const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL ?? "https://evmrpc-test.0g.ai";
+const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL ?? "https://evmrpc-testnet.0g.ai";
 
 export async function getbroker(signer: ethers.Signer) {
-  return createZGServingNetworkBroker(signer, { chainId: 16601, rpcUrl: RPC_URL });
+  return createZGServingNetworkBroker(signer, { chainId: 16602, rpcUrl: RPC_URL });
 }
 
 export async function listModels(signer: ethers.Signer) {

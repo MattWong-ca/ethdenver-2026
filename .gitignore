@@ -8,6 +8,9 @@ node_modules/
 my-test-app/
 test-*/
 
+# Reference repos cloned locally for development
+0g-compute-ts-starter-kit/
+
 # Generated inside template dirs when running locally for dev/testing
 templates/**/.next/
 templates/**/package-lock.json

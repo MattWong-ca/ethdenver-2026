@@ -80,8 +80,15 @@ function writeWebPackageJson(targetDir: string, { storage, compute }: Features) 
     viem: "^2.21.0",
     wagmi: "^2.13.0",
   };
-  if (storage) { deps["@0glabs/0g-ts-sdk"] = "^0.3.3"; deps["ethers"] = "^6.13.0"; }
-  if (compute) { deps["@0glabs/0g-serving-user-broker"] = "latest"; deps["ethers"] = "^6.13.0"; }
+  if (storage) {
+    deps["@0glabs/0g-ts-sdk"] = "^0.3.3";
+    deps["ethers"] = "^6.13.0";
+  }
+  if (compute) {
+    deps["@0glabs/0g-serving-broker"] = "0.6.2";
+    deps["openai"] = "^4.28.0";
+    if (!deps["ethers"]) deps["ethers"] = "^6.13.0";
+  }
 
   const pkg = {
     name: "web",
@@ -106,16 +113,17 @@ function writeWebPackageJson(targetDir: string, { storage, compute }: Features) 
 function writeEnvExample(targetDir: string, { contracts, storage, compute }: Features) {
   const lines = [
     "# 0G Galileo Testnet",
-    "NEXT_PUBLIC_CHAIN_ID=16601",
+    "NEXT_PUBLIC_CHAIN_ID=16602",
     "NEXT_PUBLIC_RPC_URL=https://evmrpc-testnet.0g.ai",
   ];
   if (storage) {
     lines.push("STORAGE_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai");
   }
-  if (compute) {
+  if (compute || contracts) {
     lines.push("");
-    lines.push("# 0G Compute — set your provider address (find one via broker.listService())");
-    lines.push("NEXT_PUBLIC_COMPUTE_PROVIDER=");
+    lines.push("# Private key — used server-side for compute inference payments and/or Hardhat deploy");
+    lines.push("# Never committed or exposed to the browser. Get testnet OG at https://faucet.0g.ai");
+    lines.push("PRIVATE_KEY=");
   }
   if (storage && !contracts) {
     lines.push("");
@@ -127,10 +135,6 @@ function writeEnvExample(targetDir: string, { contracts, storage, compute }: Fea
     lines.push("");
     lines.push("# Populated automatically after `npm run deploy`");
     lines.push("NEXT_PUBLIC_CONTRACT_ADDRESS=");
-    lines.push("");
-    lines.push("# Private key for Hardhat deploy and storage transactions — never commit this");
-    lines.push("# Get testnet OG at https://faucet.0g.ai");
-    lines.push("PRIVATE_KEY=");
   }
 
   fs.writeFileSync(path.join(targetDir, "packages", "web", ".env.example"), lines.join("\n") + "\n");
@@ -243,7 +247,7 @@ function writeReadme(targetDir: string, { projectName, contracts, storage, compu
     lines.push("", "## Storage", "", "Files are uploaded to 0G decentralized storage via `@0glabs/0g-ts-sdk`.", "Edit `packages/web/components/StorageSection.tsx` to customize.");
   }
   if (compute) {
-    lines.push("", "## Compute", "", "AI inference is routed through the 0G compute network via `@0glabs/0g-serving-user-broker`.", "Set `NEXT_PUBLIC_COMPUTE_PROVIDER` in `.env.local` to your chosen provider address.", "Edit `packages/web/components/ComputeSection.tsx` to customize.");
+    lines.push("", "## Compute", "", "AI inference is routed through the 0G compute network via `@0glabs/0g-serving-broker`.", "Edit `packages/web/components/ComputeSection.tsx` to customize.");
   }
 
   lines.push("", "## Resources", "", "- [0G Docs](https://docs.0g.ai)", "- [Faucet](https://faucet.0g.ai)", "- [Explorer](https://chainscan-galileo.0g.ai)");
