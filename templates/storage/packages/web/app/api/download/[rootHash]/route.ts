@@ -18,7 +18,7 @@ export async function GET(
 
   try {
     const indexer = new Indexer(INDEXER_RPC);
-    const err = await indexer.download(rootHash, tmpPath, true);
+    const err = await indexer.download(rootHash, tmpPath, false);
     if (err) throw new Error(`Download error: ${err}`);
 
     const buffer = await readFile(tmpPath);
