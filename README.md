@@ -1,6 +1,6 @@
 # create-0g-app
 
-The fastest way to build on the [0G](https://0g.ai). One command scaffolds a full-stack app pre-wired with working code for 0G Storage, Compute (AI inference), smart contracts, and INFTs.
+The fastest way to build on [0G](https://0g.ai). One command scaffolds a full-stack app pre-wired with working code for 0G Storage, Compute (AI inference), smart contracts, and INFTs.
 
 ```bash
 npx create-0g-app@latest
@@ -62,11 +62,12 @@ Scaffolds a Hardhat project targeting the 0G Galileo testnet (chain ID `16602`).
 **Commands:**
 ```bash
 npm run deploy    # compile + deploy to Galileo testnet
-npm run verify    # verify on-chain
 ```
 
 **RPC:** `https://evmrpc-testnet.0g.ai`
+
 **Explorer:** `https://chainscan-galileo.0g.ai`
+
 **Docs:** https://docs.0g.ai/developer-hub/building-on-0g/contracts
 
 ---
@@ -92,12 +93,6 @@ const [tx, uploadErr] = await indexer.upload(zgFile, RPC_URL, signer as any);
 // tx.txHash   = on-chain submission transaction
 
 const dlErr = await indexer.download(rootHash, outPath, false); // retrieve by root hash
-```
-
-**Env vars required:**
-```
-PRIVATE_KEY=                  # signs storage transactions (server-side only)
-STORAGE_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai
 ```
 
 > **Note:** `scripts/patch-0g-sdk.js` patches the SDK's ABI to match the current testnet `FixedPriceFlow` contract. It runs automatically on `npm install` via `postinstall`.
