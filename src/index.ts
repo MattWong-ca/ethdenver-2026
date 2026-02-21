@@ -46,6 +46,9 @@ async function main() {
   const compute = await p.confirm({ message: "Use 0G Compute? (AI inference)", initialValue: false });
   if (p.isCancel(compute)) { p.cancel("Cancelled."); process.exit(0); }
 
+  const inft = await p.confirm({ message: "Use 0G INFT? (Intelligent NFTs — metadata on 0G Storage)", initialValue: false });
+  if (p.isCancel(inft)) { p.cancel("Cancelled."); process.exit(0); }
+
   const targetDir = path.resolve(process.cwd(), projectName as string);
 
   if (fs.existsSync(targetDir)) {
@@ -62,7 +65,7 @@ async function main() {
   fs.ensureDirSync(targetDir);
 
   s.start("Scaffolding project");
-  scaffold({ projectName: projectName as string, contracts: !!contracts, storage: !!storage, compute: !!compute }, targetDir);
+  scaffold({ projectName: projectName as string, contracts: !!contracts, storage: !!storage, compute: !!compute, inft: !!inft }, targetDir);
   s.stop(`Scaffolded project in ${pc.green(`./${projectName as string}`)}`);
 
   // Install
@@ -79,9 +82,10 @@ async function main() {
     contracts && "contracts",
     storage && "storage",
     compute && "compute",
+    inft && "inft",
   ].filter(Boolean);
 
-  const needsPrivateKey = !!(contracts || storage || compute);
+  const needsPrivateKey = !!(contracts || storage || compute || inft);
 
   p.outro(
     [
@@ -96,8 +100,9 @@ async function main() {
       needsPrivateKey ? `    ${pc.yellow("⚠")}  Add your ${pc.bold("PRIVATE_KEY")} to ${pc.cyan(`${projectName as string}/packages/web/.env.local`)}` : "",
       needsPrivateKey ? `       ${pc.dim("Get testnet OG at https://faucet.0g.ai")}` : "",
       "",
-      contracts ? `    ${pc.cyan("npm run deploy")}  ${pc.dim("→ deploy contract to Galileo testnet")}` : "",
-      `    ${pc.cyan("npm run dev")}     ${pc.dim("→ start local dev server")}`,
+      contracts ? `    ${pc.cyan("npm run deploy")}       ${pc.dim("→ deploy contract to Galileo testnet")}` : "",
+      inft ? `    ${pc.cyan("npm run deploy:inft")}  ${pc.dim("→ deploy INFT contract to Galileo testnet")}` : "",
+      `    ${pc.cyan("npm run dev")}          ${pc.dim("→ start local dev server")}`,
       "",
       `  ${pc.dim("Docs: https://docs.0g.ai")}`,
     ]

@@ -6,12 +6,13 @@ export interface Features {
   contracts: boolean;
   storage: boolean;
   compute: boolean;
+  inft: boolean;
 }
 
 const TEMPLATES_DIR = path.join(__dirname, "..", "templates");
 
 export function scaffold(features: Features, targetDir: string) {
-  const { contracts, storage, compute } = features;
+  const { contracts, storage, compute, inft } = features;
 
   // 0. Ensure all required directories exist
   fs.ensureDirSync(path.join(targetDir, "packages", "web", "app"));
@@ -29,9 +30,15 @@ export function scaffold(features: Features, targetDir: string) {
   if (compute) {
     fs.copySync(path.join(TEMPLATES_DIR, "compute"), targetDir, { filter: noDeps });
   }
+  if (inft) {
+    // INFT needs the contracts base (hardhat.config.ts etc.) + its own files
+    fs.copySync(path.join(TEMPLATES_DIR, "contracts"), targetDir, { filter: noDeps });
+    fs.copySync(path.join(TEMPLATES_DIR, "inft"), targetDir, { filter: noDeps });
+  }
 
   // 3. Generate dynamic files
   writeRootPackageJson(targetDir, features);
+  if (contracts || inft) writeContractsPackageJson(targetDir, features);
   writeWebPackageJson(targetDir, features);
   writeEnvExample(targetDir, features);
   writePageTsx(targetDir, features);
@@ -53,20 +60,23 @@ function noDeps(src: string) {
   return !rel.includes("node_modules") && !rel.includes(".next");
 }
 
-function writeRootPackageJson(targetDir: string, { projectName, contracts, storage }: Features) {
+function writeRootPackageJson(targetDir: string, { projectName, contracts, storage, inft }: Features) {
   const workspaces = ["packages/web"];
-  if (contracts) workspaces.push("packages/contracts");
+  if (contracts || inft) workspaces.push("packages/contracts");
 
   const scripts: Record<string, string> = {
     dev: "npm run dev --workspace=packages/web",
     build: "npm run build --workspace=packages/web",
   };
-  if (storage) {
+  if (storage || inft) {
     scripts.postinstall = "node scripts/patch-0g-sdk.js";
   }
   if (contracts) {
     scripts.deploy = "npm run compile --workspace=packages/contracts && npm run deploy --workspace=packages/contracts";
     scripts.verify = "npm run verify --workspace=packages/contracts";
+  }
+  if (inft) {
+    scripts["deploy:inft"] = "npm run compile --workspace=packages/contracts && npm run deploy:inft --workspace=packages/contracts";
   }
 
   fs.writeFileSync(
@@ -75,7 +85,35 @@ function writeRootPackageJson(targetDir: string, { projectName, contracts, stora
   );
 }
 
-function writeWebPackageJson(targetDir: string, { storage, compute }: Features) {
+function writeContractsPackageJson(targetDir: string, { inft }: Features) {
+  const pkg = {
+    name: "contracts",
+    version: "1.0.0",
+    private: true,
+    scripts: {
+      compile: "hardhat compile",
+      deploy: "hardhat run scripts/deploy.ts --network 0g-galileo",
+      "deploy:inft": "hardhat run scripts/deployINFT.ts --network 0g-galileo",
+      verify: "hardhat verify --network 0g-galileo $(cat .deployed-address)",
+      test: "hardhat test",
+    },
+    dependencies: {
+      ...(inft ? { "@openzeppelin/contracts": "^5.0.0" } : {}),
+    },
+    devDependencies: {
+      "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+      dotenv: "^16.0.0",
+      hardhat: "^2.22.0",
+    },
+  };
+
+  fs.writeFileSync(
+    path.join(targetDir, "packages", "contracts", "package.json"),
+    JSON.stringify(pkg, null, 2)
+  );
+}
+
+function writeWebPackageJson(targetDir: string, { storage, compute, inft }: Features) {
   const deps: Record<string, string> = {
     "@tanstack/react-query": "^5.62.0",
     next: "^15.0.0",
@@ -91,6 +129,10 @@ function writeWebPackageJson(targetDir: string, { storage, compute }: Features) 
   if (compute) {
     deps["@0glabs/0g-serving-broker"] = "0.6.2";
     deps["openai"] = "^4.28.0";
+    if (!deps["ethers"]) deps["ethers"] = "^6.13.0";
+  }
+  if (inft) {
+    if (!deps["@0glabs/0g-ts-sdk"]) deps["@0glabs/0g-ts-sdk"] = "^0.3.3";
     if (!deps["ethers"]) deps["ethers"] = "^6.13.0";
   }
 
@@ -114,26 +156,31 @@ function writeWebPackageJson(targetDir: string, { storage, compute }: Features) 
   );
 }
 
-function writeEnvExample(targetDir: string, { contracts, storage, compute }: Features) {
+function writeEnvExample(targetDir: string, { contracts, storage, compute, inft }: Features) {
   const lines = [
     "# 0G Galileo Testnet",
     "NEXT_PUBLIC_CHAIN_ID=16602",
     "NEXT_PUBLIC_RPC_URL=https://evmrpc-testnet.0g.ai",
   ];
-  if (storage) {
+  if (storage || inft) {
     lines.push("STORAGE_INDEXER_RPC=https://indexer-storage-testnet-turbo.0g.ai");
   }
-  if (compute || contracts) {
+  if (compute || contracts || inft) {
     lines.push("");
     lines.push("# Private key — used server-side for compute inference payments and/or Hardhat deploy");
     lines.push("# Never committed or exposed to the browser. Get testnet OG at https://faucet.0g.ai");
     lines.push("PRIVATE_KEY=");
   }
-  if (storage && !contracts) {
+  if (storage && !contracts && !inft) {
     lines.push("");
     lines.push("# Private key for signing storage transactions — never commit this");
     lines.push("# Get testnet OG at https://faucet.0g.ai");
     lines.push("PRIVATE_KEY=");
+  }
+  if (inft) {
+    lines.push("");
+    lines.push("# Populated automatically after `npm run deploy:inft`");
+    lines.push("NEXT_PUBLIC_INFT_ADDRESS=");
   }
   if (contracts) {
     lines.push("");
@@ -144,12 +191,13 @@ function writeEnvExample(targetDir: string, { contracts, storage, compute }: Fea
   fs.writeFileSync(path.join(targetDir, "packages", "web", ".env.example"), lines.join("\n") + "\n");
 }
 
-function writePageTsx(targetDir: string, { storage, compute }: Features) {
-  const hasFeatures = storage || compute;
+function writePageTsx(targetDir: string, { storage, compute, inft }: Features) {
+  const hasFeatures = storage || compute || inft;
 
   const imports = [
     ...(storage ? [`import { StorageSection } from "@/components/StorageSection";`] : []),
     ...(compute ? [`import { ComputeSection } from "@/components/ComputeSection";`] : []),
+    ...(inft ? [`import { INFTSection } from "@/components/INFTSection";`] : []),
   ];
 
   const body = hasFeatures
@@ -158,6 +206,7 @@ function writePageTsx(targetDir: string, { storage, compute }: Features) {
     <main className={styles.main}>
       ${storage ? "<StorageSection />" : ""}
       ${compute ? "<ComputeSection />" : ""}
+      ${inft ? "<INFTSection />" : ""}
     </main>
   );`
     : `
@@ -228,7 +277,7 @@ function writePageCss(targetDir: string) {
   fs.writeFileSync(path.join(targetDir, "packages", "web", "app", "page.module.css"), css);
 }
 
-function writeReadme(targetDir: string, { projectName, contracts, storage, compute }: Features) {
+function writeReadme(targetDir: string, { projectName, contracts, storage, compute, inft }: Features) {
   const lines = [
     `# ${projectName}`,
     "",
@@ -252,6 +301,25 @@ function writeReadme(targetDir: string, { projectName, contracts, storage, compu
   }
   if (compute) {
     lines.push("", "## Compute", "", "AI inference is routed through the 0G compute network via `@0glabs/0g-serving-broker`.", "Edit `packages/web/components/ComputeSection.tsx` to customize.");
+  }
+  if (inft) {
+    lines.push(
+      "",
+      "## INFT (Intelligent NFTs)",
+      "",
+      "Mint ERC-721 tokens whose metadata lives on 0G decentralized storage.",
+      "The storage root hash and metadata hash are recorded on-chain for verifiability.",
+      "",
+      "### Deploy the INFT contract",
+      "",
+      "```bash",
+      "npm run deploy:inft",
+      "```",
+      "",
+      "This deploys `INFT.sol` to 0G Galileo Testnet and writes the address to `.env.local`.",
+      "",
+      "Edit `packages/web/components/INFTSection.tsx` to customize the UI.",
+    );
   }
 
   lines.push("", "## Resources", "", "- [0G Docs](https://docs.0g.ai)", "- [Faucet](https://faucet.0g.ai)", "- [Explorer](https://chainscan-galileo.0g.ai)");

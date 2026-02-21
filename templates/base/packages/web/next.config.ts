@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       })
     );
     config.resolve.fallback = { fs: false, net: false, tls: false, dns: false, child_process: false };
+    config.externals.push("pino-pretty", "@react-native-async-storage/async-storage");
     return config;
   },
 };
