@@ -7,7 +7,7 @@
 }
 .section:last-child { border-bottom: none; }
 
-.heading { font-size: 1.25rem; font-weight: 700; }
+.heading { font-size: 1.25rem; font-weight: 700; border-left: 3px solid var(--accent); padding-left: 12px; }
 .description { color: var(--muted); font-size: 0.9rem; margin-top: -8px; }
 .hint { color: var(--muted); font-size: 0.9rem; }
 .docsLink { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
@@ -35,7 +35,7 @@
   user-select: none;
 }
 .flowHeading::-webkit-details-marker { display: none; }
-.flowHeading::before { content: "▶"; font-size: 0.6rem; transition: transform 0.15s; }
+.flowHeading::before { content: "›"; font-size: 0.75rem; transition: transform 0.15s; }
 details[open] > .flowHeading::before { transform: rotate(90deg); }
 
 .flowList {
@@ -73,6 +73,7 @@ details[open] > .flowHeading::before { transform: rotate(90deg); }
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
+  background: #ffffff;
 }
 .dropzone:hover, .over { border-color: var(--accent); background: var(--accent-dim); }
 .icon { font-size: 1.5rem; color: var(--accent); }

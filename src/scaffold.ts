@@ -205,6 +205,10 @@ function writePageTsx(targetDir: string, { contracts, storage, compute, inft }: 
     ? `
   return (
     <main className={styles.main}>
+      <div className={styles.hero}>
+        <h1 className={styles.heroTitle}>create-0g-app</h1>
+        <p className={styles.heroSubtitle}>The fastest way to build on 0G with one command</p>
+      </div>
       ${contracts ? "<ContractsSection />" : ""}
       ${storage ? "<StorageSection />" : ""}
       ${compute ? "<ComputeSection />" : ""}
@@ -248,7 +252,23 @@ function writePageCss(targetDir: string) {
 .main {
   max-width: 800px;
   margin: 0 auto;
-  padding: 32px 24px 80px;
+  padding: 0 24px 80px;
+}
+
+.hero {
+  text-align: center;
+  padding: 56px 0 40px;
+}
+.heroTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+}
+.heroSubtitle {
+  font-size: 1.05rem;
+  color: #4b5563;
 }
 
 /* Landing (no features selected) */

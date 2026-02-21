@@ -7,7 +7,7 @@
 }
 .section:last-child { border-bottom: none; }
 
-.heading { font-size: 1.25rem; font-weight: 700; }
+.heading { font-size: 1.25rem; font-weight: 700; border-left: 3px solid var(--accent); padding-left: 12px; }
 .description { color: var(--muted); font-size: 0.9rem; margin-top: -8px; }
 .hint { color: var(--muted); font-size: 0.85rem; }
 .docsLink { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
@@ -35,7 +35,7 @@
   user-select: none;
 }
 .flowHeading::-webkit-details-marker { display: none; }
-.flowHeading::before { content: "▶"; font-size: 0.6rem; transition: transform 0.15s; }
+.flowHeading::before { content: "›"; font-size: 0.75rem; transition: transform 0.15s; }
 details[open] > .flowHeading::before { transform: rotate(90deg); }
 
 .flowList {
@@ -119,7 +119,7 @@ details[open] > .flowHeading::before { transform: rotate(90deg); }
   user-select: none;
 }
 .setupSubtitle::-webkit-details-marker { display: none; }
-.setupSubtitle::before { content: "▶"; font-size: 0.6rem; transition: transform 0.15s; }
+.setupSubtitle::before { content: "›"; font-size: 0.75rem; transition: transform 0.15s; }
 details[open] > .setupSubtitle::before { transform: rotate(90deg); }
 
 .setupSteps {
@@ -161,17 +161,17 @@ details[open] > .setupSubtitle::before { transform: rotate(90deg); }
 }
 
 .btnSetup {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: #1e1b4b;
+  color: #ffffff;
+  border: none;
   padding: 8px 18px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: background 0.15s;
 }
-.btnSetup:hover:not(:disabled) { border-color: var(--accent); }
+.btnSetup:hover:not(:disabled) { background: #312e81; }
 .btnSetup:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .setupSuccess { font-size: 0.85rem; color: #065f46; }
@@ -239,7 +239,7 @@ details[open] > .setupSubtitle::before { transform: rotate(90deg); }
 
 .btn {
   background: var(--accent);
-  color: #000;
+  color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;

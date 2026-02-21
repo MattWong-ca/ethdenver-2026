@@ -11,7 +11,7 @@ export function Navbar() {
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.logo}>
-        <span className={styles.accent}>create</span>-0g-app
+        create-<span className={styles.accent}>0G</span>-app
       </Link>
       <div className={styles.right}>
         {isConnected ? (

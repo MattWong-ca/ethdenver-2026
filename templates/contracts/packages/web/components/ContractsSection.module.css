@@ -7,7 +7,17 @@
 }
 .section:last-child { border-bottom: none; }
 
-.heading { font-size: 1.25rem; font-weight: 700; }
+.heading { font-size: 1.25rem; font-weight: 700; border-left: 3px solid var(--accent); padding-left: 12px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 .line { color: var(--muted); font-size: 0.9rem; }
 
