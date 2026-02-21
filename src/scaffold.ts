@@ -71,12 +71,12 @@ function writeRootPackageJson(targetDir: string, { projectName, contracts, stora
   if (storage || inft) {
     scripts.postinstall = "node scripts/patch-0g-sdk.js";
   }
-  if (contracts) {
-    scripts.deploy = "npm run compile --workspace=packages/contracts && npm run deploy --workspace=packages/contracts";
+  if (contracts || inft) {
+    const deploySteps = ["npm run compile --workspace=packages/contracts"];
+    if (contracts) deploySteps.push("npm run deploy --workspace=packages/contracts");
+    if (inft) deploySteps.push("npm run deploy:inft --workspace=packages/contracts");
+    scripts.deploy = deploySteps.join(" && ");
     scripts.verify = "npm run verify --workspace=packages/contracts";
-  }
-  if (inft) {
-    scripts["deploy:inft"] = "npm run compile --workspace=packages/contracts && npm run deploy:inft --workspace=packages/contracts";
   }
 
   fs.writeFileSync(
@@ -293,8 +293,11 @@ function writeReadme(targetDir: string, { projectName, contracts, storage, compu
     "```",
   ];
 
-  if (contracts) {
-    lines.push("", "## Deploy Contract", "", "```bash", "npm run deploy", "npm run verify", "```");
+  if (contracts || inft) {
+    const deploySection = ["", "## Deploy", "", "```bash", "npm run deploy", "npm run verify", "```", ""];
+    if (contracts) deploySection.push("Deploys your smart contract to 0G Galileo Testnet and writes the address to `.env.local`.");
+    if (inft) deploySection.push("Deploys `INFT.sol` to 0G Galileo Testnet and writes the address to `.env.local`.");
+    lines.push(...deploySection);
   }
   if (storage) {
     lines.push("", "## Storage", "", "Files are uploaded to 0G decentralized storage via `@0glabs/0g-ts-sdk`.", "Edit `packages/web/components/StorageSection.tsx` to customize.");
@@ -309,14 +312,6 @@ function writeReadme(targetDir: string, { projectName, contracts, storage, compu
       "",
       "Mint ERC-721 tokens whose metadata lives on 0G decentralized storage.",
       "The storage root hash and metadata hash are recorded on-chain for verifiability.",
-      "",
-      "### Deploy the INFT contract",
-      "",
-      "```bash",
-      "npm run deploy:inft",
-      "```",
-      "",
-      "This deploys `INFT.sol` to 0G Galileo Testnet and writes the address to `.env.local`.",
       "",
       "Edit `packages/web/components/INFTSection.tsx` to customize the UI.",
     );
