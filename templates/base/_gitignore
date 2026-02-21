@@ -9,3 +9,4 @@ packages/web/.env.local
 packages/web/.env
 .DS_Store
 *.log
+.0g-setup.json

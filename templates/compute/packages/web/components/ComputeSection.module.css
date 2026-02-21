@@ -9,8 +9,173 @@
 
 .heading { font-size: 1.25rem; font-weight: 700; }
 .description { color: var(--muted); font-size: 0.9rem; margin-top: -8px; }
-.hint { color: var(--muted); font-size: 0.9rem; }
+.hint { color: var(--muted); font-size: 0.85rem; }
 
+/* Flow sections */
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flowHeading {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin: 0;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+.flowHeading::-webkit-details-marker { display: none; }
+.flowHeading::before { content: "▶"; font-size: 0.6rem; transition: transform 0.15s; }
+details[open] > .flowHeading::before { transform: rotate(90deg); }
+
+.flowList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.flowList li {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.flowList code {
+  font-family: monospace;
+  font-size: 0.82rem;
+  background: var(--border);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Setup panel */
+.setupBox {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setupTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.statusPill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 99px;
+}
+.pillReady {
+  background: #d1fae5;
+  color: #065f46;
+}
+.pillPending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.setupDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setupSubtitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin: 0;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+.setupSubtitle::-webkit-details-marker { display: none; }
+.setupSubtitle::before { content: "▶"; font-size: 0.6rem; transition: transform 0.15s; }
+details[open] > .setupSubtitle::before { transform: rotate(90deg); }
+
+.setupSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.setupSteps li {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.setupSteps code {
+  font-family: monospace;
+  font-size: 0.82rem;
+  background: var(--border);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.setupWarning {
+  font-size: 0.82rem;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.setupRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btnSetup {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btnSetup:hover:not(:disabled) { border-color: var(--accent); }
+.btnSetup:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.setupSuccess { font-size: 0.85rem; color: #065f46; }
+.setupError { font-size: 0.85rem; color: var(--error); }
+
+/* Chat */
 .chatBox {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -43,16 +208,17 @@
 
 .error { color: var(--error); font-size: 0.85rem; }
 
-.warning {
-  font-size: 0.85rem;
-  color: #92400e;
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
+.modelRow { display: flex; align-items: center; gap: 10px; }
+.modelLabel { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+.modelSelect {
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 0.88rem;
+  cursor: pointer;
 }
-.warning code { font-family: monospace; font-weight: 600; }
-.warning a { color: #92400e; font-weight: 600; }
 
 .inputRow { display: flex; gap: 8px; }
 .input {

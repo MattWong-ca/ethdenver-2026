@@ -1,59 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ethers } from "ethers";
-import { createZGComputeNetworkBroker } from "@0glabs/0g-serving-broker";
 import OpenAI from "openai";
+import { getBroker, PROVIDERS, getProviderReady } from "./broker";
 
-const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL ?? "https://evmrpc-testnet.0g.ai";
-
-// Active testnet providers (verified on 0G Galileo testnet)
-const PROVIDERS: Record<string, string> = {
-  "qwen/qwen-2.5-7b-instruct": "0xa48f01287233509FD694a22Bf840225062E67836",
-};
-
-function getSigner() {
-  const privateKey = process.env.PRIVATE_KEY;
-  if (!privateKey) throw new Error("PRIVATE_KEY is not set in .env.local");
-  const provider = new ethers.JsonRpcProvider(RPC_URL);
-  return new ethers.Wallet(privateKey, provider);
-}
-
-async function getBroker() {
-  const signer = getSigner();
-  const broker = await createZGComputeNetworkBroker(signer);
-
-  const MIN_BALANCE = BigInt("3000000000000000000"); // 3 OG minimum (v0.6.x requirement)
-  try {
-    const ledger = await broker.ledger.getLedger();
-    if (ledger.availableBalance < MIN_BALANCE) {
-      console.log("[compute] balance low, topping up...");
-      await broker.ledger.depositFund(3);
-    }
-  } catch (e) {
-    const msg = (e as Error).message ?? "";
-    if (msg.includes("does not exist") || msg.includes("add-account")) {
-      console.log("[compute] creating ledger with 3 OG deposit...");
-      await broker.ledger.addLedger(3);
-    } else {
-      throw e;
-    }
-  }
-
-  return broker;
-}
-
-// GET /api/compute — list available models
+// GET /api/compute — provider setup status
 export async function GET() {
-  try {
-    const broker = await getBroker();
-    const services = await broker.inference.listService();
-    const safe = JSON.parse(JSON.stringify(services, (_, v) => (typeof v === "bigint" ? v.toString() : v)));
-    return NextResponse.json({ models: Object.keys(PROVIDERS), services: safe });
-  } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+  const ready = getProviderReady();
+  const providerReady: Record<string, boolean> = {};
+  for (const [model, addr] of Object.entries(PROVIDERS)) {
+    providerReady[model] = ready.has(addr);
   }
+  return NextResponse.json({ models: Object.keys(PROVIDERS), providerReady });
 }
 
-// POST /api/compute — send a query
+// POST /api/compute — inference only (run /api/compute/setup first)
 export async function POST(req: NextRequest) {
   try {
     const { model, messages } = await req.json();
@@ -66,20 +25,10 @@ export async function POST(req: NextRequest) {
 
     const broker = await getBroker();
 
-    // Acknowledge provider (safe to call multiple times)
-    await broker.inference.acknowledgeProviderSigner(providerAddress);
-
-    // Transfer funds to provider (required before inference, minimum 1 OG)
-    await broker.ledger.transferFund(providerAddress, "inference", BigInt("1000000000000000000"));
-
-    // Get endpoint + model name from provider metadata
     const { endpoint, model: modelName } = await broker.inference.getServiceMetadata(providerAddress);
-
-    // Get single-use auth headers
     const query = JSON.stringify(messages);
     const headers = await broker.inference.getRequestHeaders(providerAddress, query);
 
-    // Call the provider via OpenAI-compatible API
     const openai = new OpenAI({ baseURL: endpoint, apiKey: "" });
     const completion = await openai.chat.completions.create(
       { model: modelName, messages, max_tokens: 1024 },
@@ -89,8 +38,13 @@ export async function POST(req: NextRequest) {
     const content = completion.choices[0].message.content ?? "";
     const chatId = completion.id;
 
-    // Settle payment
-    const isValid = await broker.inference.processResponse(providerAddress, chatId, content);
+    // processResponse settles payment — non-fatal if it fails (inference already completed)
+    let isValid = false;
+    try {
+      isValid = await broker.inference.processResponse(providerAddress, chatId, content);
+    } catch (e) {
+      console.warn("[compute] processResponse failed (settlement skipped):", (e as Error).message);
+    }
 
     return NextResponse.json({ content, model, isValid });
   } catch (e) {
