@@ -37,7 +37,7 @@ async function main() {
   }
 
   // Feature selection
-  const contracts = await p.confirm({ message: "Include on-chain contracts? (Hardhat + 0G Galileo)", initialValue: false });
+  const contracts = await p.confirm({ message: "Include onchain contracts? (Hardhat + 0G Galileo)", initialValue: false });
   if (p.isCancel(contracts)) { p.cancel("Cancelled."); process.exit(0); }
 
   const storage = await p.confirm({ message: "Use 0G Storage?", initialValue: false });

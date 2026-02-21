@@ -191,10 +191,11 @@ function writeEnvExample(targetDir: string, { contracts, storage, compute, inft 
   fs.writeFileSync(path.join(targetDir, "packages", "web", ".env.example"), lines.join("\n") + "\n");
 }
 
-function writePageTsx(targetDir: string, { storage, compute, inft }: Features) {
-  const hasFeatures = storage || compute || inft;
+function writePageTsx(targetDir: string, { contracts, storage, compute, inft }: Features) {
+  const hasFeatures = contracts || storage || compute || inft;
 
   const imports = [
+    ...(contracts ? [`import { ContractsSection } from "@/components/ContractsSection";`] : []),
     ...(storage ? [`import { StorageSection } from "@/components/StorageSection";`] : []),
     ...(compute ? [`import { ComputeSection } from "@/components/ComputeSection";`] : []),
     ...(inft ? [`import { INFTSection } from "@/components/INFTSection";`] : []),
@@ -204,6 +205,7 @@ function writePageTsx(targetDir: string, { storage, compute, inft }: Features) {
     ? `
   return (
     <main className={styles.main}>
+      ${contracts ? "<ContractsSection />" : ""}
       ${storage ? "<StorageSection />" : ""}
       ${compute ? "<ComputeSection />" : ""}
       ${inft ? "<INFTSection />" : ""}

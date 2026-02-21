@@ -1,0 +1,21 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+
+.heading { font-size: 1.25rem; font-weight: 700; }
+
+.line { color: var(--muted); font-size: 0.9rem; }
+
+.code {
+  font-family: monospace;
+  font-size: 0.88rem;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
