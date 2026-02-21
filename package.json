@@ -1,6 +1,6 @@
 {
   "name": "create-0g-app",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Zero-config scaffold CLI for building on the 0G decentralized AI network",
   "bin": {
     "create-0g-app": "./dist/index.js"
