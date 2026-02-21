@@ -115,12 +115,12 @@ function writeContractsPackageJson(targetDir: string, { inft }: Features) {
 
 function writeWebPackageJson(targetDir: string, { storage, compute, inft }: Features) {
   const deps: Record<string, string> = {
-    "@tanstack/react-query": "^5.62.0",
-    next: "^15.0.0",
-    react: "^19.0.0",
-    "react-dom": "^19.0.0",
-    viem: "^2.21.0",
-    wagmi: "^2.13.0",
+    "@tanstack/react-query": "5.62.0",
+    next: "15.1.7",
+    react: "19.0.0",
+    "react-dom": "19.0.0",
+    viem: "2.21.58",
+    wagmi: "2.13.4",
   };
   if (storage) {
     deps["@0glabs/0g-ts-sdk"] = "^0.3.3";
