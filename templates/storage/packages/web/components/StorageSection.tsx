@@ -32,6 +32,42 @@ export function StorageSection() {
       <h2 className={styles.heading}>Storage</h2>
       <p className={styles.description}>Upload files to 0G decentralized storage.</p>
 
+      {/* Upload flow */}
+      <details className={styles.flow}>
+        <summary className={styles.flowHeading}>Upload flow</summary>
+        <ol className={styles.flowList}>
+          <li>
+            <code>ZgFile.fromFilePath</code> — wraps the file into a 0G file object
+          </li>
+          <li>
+            <code>zgFile.merkleTree()</code> — builds a Merkle tree of the file&apos;s
+            chunks so the network can verify data integrity during retrieval
+          </li>
+          <li>
+            <code>indexer.upload(zgFile, RPC_URL, signer)</code> — disperses file chunks
+            across 0G storage nodes and records the Merkle root on-chain, paying gas
+          </li>
+          <li>
+            Returns <code>rootHash</code> (Merkle root = permanent content address)
+            and <code>txHash</code> (on-chain record)
+          </li>
+        </ol>
+      </details>
+
+      {/* Download flow */}
+      <details className={styles.flow}>
+        <summary className={styles.flowHeading}>Download flow</summary>
+        <ol className={styles.flowList}>
+          <li>
+            <code>indexer.download(rootHash, tmpPath)</code> — fetches file chunks
+            from storage nodes by Merkle root, verifying each chunk against the tree
+          </li>
+          <li>
+            File is streamed back to the browser as a binary download
+          </li>
+        </ol>
+      </details>
+
       <div
         className={`${styles.dropzone} ${uploadState.status === "uploading" ? styles.over : ""}`}
         onDragOver={(e) => e.preventDefault()}

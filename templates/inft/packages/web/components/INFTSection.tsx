@@ -60,6 +60,50 @@ export function INFTSection() {
         Mint Intelligent NFTs — metadata stored on 0G Storage, ownership on 0G Chain.
       </p>
 
+      {/* Mint flow */}
+      <details className={styles.flow}>
+        <summary className={styles.flowHeading}>Mint flow</summary>
+        <ol className={styles.flowList}>
+          <li>
+            Build metadata JSON <code>{"{ name, description, createdAt }"}</code> on the server
+          </li>
+          <li>
+            <code>indexer.upload(zgFile, RPC_URL, signer)</code> — upload metadata to
+            0G Storage, returns <code>storageRoot</code> (Merkle root = content address)
+          </li>
+          <li>
+            <code>ethers.keccak256(metadataJSON)</code> — compute <code>metadataHash</code>{" "}
+            so anyone can verify the metadata hasn&apos;t been tampered with
+          </li>
+          <li>
+            <code>contract.mint(recipient, storageRoot, metadataHash)</code> — call{" "}
+            <code>INFT.sol</code> on-chain, recording ownership and both hashes permanently
+          </li>
+          <li>
+            Parse <code>INFTMinted</code> event log to extract the new <code>tokenId</code>
+          </li>
+        </ol>
+      </details>
+
+      {/* Lookup flow */}
+      <details className={styles.flow}>
+        <summary className={styles.flowHeading}>Lookup flow</summary>
+        <ol className={styles.flowList}>
+          <li>
+            Read <code>owner</code>, <code>storageRoot</code>, and <code>metadataHash</code>{" "}
+            from the contract on-chain by token ID
+          </li>
+          <li>
+            <code>indexer.download(storageRoot)</code> — fetch the metadata JSON from
+            0G Storage nodes using the Merkle root
+          </li>
+          <li>
+            Recompute <code>keccak256</code> of fetched JSON and compare to on-chain{" "}
+            <code>metadataHash</code> to verify integrity
+          </li>
+        </ol>
+      </details>
+
       {/* ── Mint ── */}
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Mint an INFT</h3>
