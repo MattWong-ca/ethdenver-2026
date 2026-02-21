@@ -30,7 +30,7 @@ export function StorageSection() {
   return (
     <section className={styles.section}>
       <h2 className={styles.heading}>Storage</h2>
-      <p className={styles.description}>Upload files to 0G decentralized storage.</p>
+      <p className={styles.description}>Upload files to 0G decentralized storage. <a className={styles.docsLink} href="https://docs.0g.ai/developer-hub/building-on-0g/storage/sdk" target="_blank" rel="noopener noreferrer">Docs ↗</a></p>
 
       {/* Upload flow */}
       <details className={styles.flow}>

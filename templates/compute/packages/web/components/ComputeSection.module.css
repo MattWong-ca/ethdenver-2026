@@ -10,6 +10,8 @@
 .heading { font-size: 1.25rem; font-weight: 700; }
 .description { color: var(--muted); font-size: 0.9rem; margin-top: -8px; }
 .hint { color: var(--muted); font-size: 0.85rem; }
+.docsLink { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+.docsLink:hover { color: var(--accent); }
 
 /* Flow sections */
 .flow {

@@ -57,7 +57,7 @@ export function INFTSection() {
     <section className={styles.section}>
       <h2 className={styles.heading}>INFT</h2>
       <p className={styles.description}>
-        Mint Intelligent NFTs — metadata stored on 0G Storage, ownership on 0G Chain.
+        Mint Intelligent NFTs — metadata stored on 0G Storage, ownership on 0G Chain. <a className={styles.docsLink} href="https://docs.0g.ai/developer-hub/building-on-0g/inft/integration" target="_blank" rel="noopener noreferrer">Docs ↗</a>
       </p>
 
       {/* Mint flow */}

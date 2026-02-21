@@ -78,7 +78,7 @@ export function ComputeSection() {
       <h2 className={styles.heading}>Compute</h2>
       <p className={styles.description}>
         Just like making an OpenAI API call, except every query is cryptographically
-        verified and paid for onchain using 0G tokens.
+        verified and paid for onchain using 0G tokens. <a className={styles.docsLink} href="https://docs.0g.ai/developer-hub/building-on-0g/compute-network/inference" target="_blank" rel="noopener noreferrer">Docs ↗</a>
       </p>
 
       {/* Main Flow */}
